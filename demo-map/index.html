@@ -54,22 +54,37 @@
       };
       layers.OpenStreetMap.addTo(map);
 
-      // Add custom data
-
-      var geojsonLayer = new L.GeoJSON.AJAX("geoman 1135.json")
-        .on('ready', function() {
-          map.fitBounds(runLayer.getBounds());
-          console.log('hello');
-
-          // After the 'ready' event fires, the GeoJSON contents are accessible
-          // and you can iterate through layers to bind custom popups.
-          runLayer.eachLayer(function(layer) {
-              // See the `.bindPopup` documentation for full details. This
-              // dataset has a property called `name`: your dataset might not,
-              // so inspect it and customize to taste.
-              layer.bindPopup(layer.feature.properties.name);
-          });
+      // Custom icons from https://thenounproject.com/support193/collection/city-elements-1/
+      var categoryToIcon = {
+        'kultur': L.icon({
+            iconUrl: 'https://static.thenounproject.com/png/3284571-200.png',
+            iconSize: [40, 40]
+          }),
+        'landscape': L.icon({
+            iconUrl: 'https://static.thenounproject.com/png/3284596-200.png',
+            iconSize: [40, 40]
+          }),
+        'shop': L.icon({
+            iconUrl: 'https://static.thenounproject.com/png/3284573-200.png',
+            iconSize: [40, 40]
+          }),
+        'relax': L.icon({
+            iconUrl: 'https://static.thenounproject.com/png/3284587-200.png',
+            iconSize: [40, 40]
+          })
+      }
+      var defaultIcon = L.icon({
+        iconUrl: 'https://static.thenounproject.com/png/3284590-200.png',
+        iconSize: [40, 40]
       });
+      var geojsonLayer = new L.GeoJSON.AJAX("geoman 1135.json", {
+            pointToLayer: function (feature, latlng) {
+                var my_icon = categoryToIcon[feature.properties.category.toLowerCase()] || defaultIcon;
+                var marker = L.marker(latlng, { icon: my_icon });
+                marker.bindPopup('<b>' + feature.properties.name + '</b><br/>' + feature.properties.category);
+                return marker;
+            }
+        });
       geojsonLayer.addTo(map);
 
       // Add custom controls
