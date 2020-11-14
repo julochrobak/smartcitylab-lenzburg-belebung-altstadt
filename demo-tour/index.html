@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Include MapillaryJS assets -->
+    <script src="https://unpkg.com/mapillary-js@2.21.0/dist/mapillary.min.js"></script>
+    <link
+      href="https://unpkg.com/mapillary-js@2.21.0/dist/mapillary.min.css"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body style="margin: 0;">
+    <div id="mapillaryjs" style="width: 820px; height: 800px;"></div>
+    <blockquote>
+      <h4>Made with Mapillary.js</h4>
+      @
+      <a href="https://hack.opendata.ch/project/661">Smart City Lab Lenzburg</a>
+    </blockquote>
+    <script>
+      var imageSet = [
+        // Scene 1
+        {
+          key: "NAbry5NC-KpwKBuuaz8ykw",
+          point: [0.3, 0.3],
+          text: "Hello, Lenzburg"
+        },
+        {
+          key: "NAbry5NC-KpwKBuuaz8ykw",
+          point: [0.5, 0.8],
+          text: "Go forward to start Altstadt tour"
+        },
+        // Scene 2
+        {
+          key: "BB2XUlZIRUTxtKqpxaqA9w",
+          point: [0.6, 0.4],
+          text: "A beautiful old building"
+        },
+        {
+          key: "BB2XUlZIRUTxtKqpxaqA9w",
+          point: [0.7, 0.6],
+          text: "24 people would like a flower shop here"
+        },
+        // Scene 3
+        {
+          key: "QAOGQiTu8ic8qBSFLStdlg",
+          point: [0.6, 0.5],
+          text: "This hotel has been here since 1723"
+        }
+      ];
+
+      var mly = new Mapillary.Viewer(
+        "mapillaryjs", // div node ID
+
+        // Mapillary application Client ID
+        "eTJvakZaOUhHQVBQcmR5dFc2Y0ZqdzpjNjkzMTVkNGUwN2ZjZGY3",
+
+        imageSet[0].key, // Mapillary image key
+
+        // No loading cover, and disable sequence stepper
+        {
+          component: {
+            cover: false,
+            popup: true,
+            sequence: {
+              visible: false
+            }
+          }
+        }
+      );
+
+      // Set up p opups
+      var popupComponent = mly.getComponent("popup");
+
+      var onNodeChanged = function (node) {
+        // Clear popups
+        popupComponent.removeAll();
+        console.info("Navigating to: " + node.key);
+        // Add the popup for the specific key, otherwise remove it
+        var found_key = imageSet.filter(function (n) {
+          return node.key == n.key;
+        });
+        if (found_key.length > 0) {
+          found_key.forEach(function (n) {
+            var span = document.createElement("span");
+            var popup = new Mapillary.PopupComponent.Popup();
+            span.innerHTML = n.text;
+            popup.setDOMContent(span);
+            popup.setBasicPoint(n.point);
+            popupComponent.add([popup]);
+          });
+        }
+        //mly.off(Mapillary.Viewer.nodechanged, onNodeChanged);
+      };
+
+      mly.on(Mapillary.Viewer.nodechanged, onNodeChanged);
+
+      window.addEventListener("resize", function () {
+        mly.resize();
+      });
+    </script>
+    <style>
+      * {
+        font-family: sans-serif;
+      }
+
+      .mapillaryjs-popup-float-top .mapillaryjs-popup-tip {
+        border-top-color: transparent;
+      }
+
+      .mapillaryjs-popup-float-top .mapillaryjs-popup-tip-inner {
+        border-top-color: #05cb63;
+      }
+
+      .mapillaryjs-popup-float-bottom .mapillaryjs-popup-tip-inner {
+        border-bottom-color: #05cb63;
+      }
+
+      .mapillaryjs-popup-float-left .mapillaryjs-popup-tip-inner {
+        border-left-color: #05cb63;
+      }
+
+      .mapillaryjs-popup-float-right .mapillaryjs-popup-tip-inner {
+        border-right-color: #05cb63;
+      }
+
+      .mapillaryjs-popup-content {
+        color: #fff;
+        border: 0;
+        padding: 5px 12px;
+        font-weight: 600;
+        background: #05cb63;
+        border-radius: 6px;
+      }
+    </style>
+  </body>
+</html>
